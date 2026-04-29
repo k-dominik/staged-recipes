@@ -14,10 +14,6 @@
 context:
   version: "1.5.0"
 
-package:
-  name: dpct
-  version: ${{ version }}
-
 source:
   url: https://github.com/ilastik/dpct/releases/download/${{ version }}/dpct-${{ version }}.tar.gz
   sha256: 943e96832db052564d04b26b18646e218057da725840371ba65bce1dc98bf418
@@ -77,7 +73,7 @@ outputs:
         - ${{ compiler("cxx") }}
       host:
         - pybind11
-        - lemon ${{ lemon }}*
+        - lemon
         - python
         - ${{ pin_subpackage("dpct-core", exact=True) }}
       run:
