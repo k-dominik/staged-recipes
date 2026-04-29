@@ -1,0 +1,104 @@
+# This example shows how to define a recipe using the new YAML based recipe format introduced by 
+# CEP 13.
+
+# For more information about this format see: https://prefix-dev.github.io/rattler-build/latest/reference/recipe_file/
+
+# The main differences with the old format is that no preprocessing is required for the file to be valid YAML.
+# This means:
+# - No "selectors", use YAML if-then-else expressions instead (https://prefix-dev.github.io/rattler-build/latest/selectors/)
+# - Jinja expressions are formatted with a leading `$` to make them valid YAML
+
+# Note: there are many handy hints in comments in this example -- remove them when you've finalized your recipe
+
+# Define variables in this section that you can use in other parts.
+context:
+  version: "1.5.0"
+
+package:
+  name: dpct
+  version: ${{ version }}
+
+source:
+  url: https://github.com/ilastik/dpct/releases/download/${{ version }}/dpct-${{ version }}.tar.gz
+  sha256: 943e96832db052564d04b26b18646e218057da725840371ba65bce1dc98bf418
+
+
+outputs:
+  - package:
+      name: dpct-core
+      version: ${{ version }}
+
+    build:
+      number: 0
+      script:
+        - if: not win
+          then: ${RECIPE_DIR}/build.sh
+          else: "%RECIPE_DIR%\\bld.bat"
+
+    requirements:
+      build:
+        - cmake
+        - if: not win
+          then:
+            - make
+        - ${{ compiler("c") }}
+        - ${{ compiler("cxx") }}
+      host:
+        - pybind11
+        - lemon
+      run_exports:
+        weak:
+          - ${{ pin_subpackage("dpct-core", exact=True) }}
+
+
+  - package:
+      name: dpct
+      version: ${{ version }}
+
+    build:
+      number: 0
+      script:
+        - if: not win
+          then: ${RECIPE_DIR}/build-python.sh
+          else: "%RECIPE_DIR%\\bld-python.bat"
+
+    requirements:
+      build:
+        - if: build_platform != target_platform
+          then:
+            - cross-python_${{ target_platform }}
+            - python
+            - cython
+        - cmake
+        - if: not win
+          then:
+            - make
+        - ${{ compiler("c") }}
+        - ${{ compiler("cxx") }}
+      host:
+        - pybind11
+        - lemon ${{ lemon }}*
+        - python
+        - ${{ pin_subpackage("dpct-core", exact=True) }}
+      run:
+        - python
+        - ${{ pin_subpackage("dpct-core", upper_bound="x.x") }}
+
+    tests:
+      - script:
+          - python test/test.py
+        files:
+          source:
+            - test/*.py
+            - test/*.json
+
+      - python:
+          imports:
+            - dpct
+          pip_check: false
+
+about:
+  homepage: https://github.com/chaubold/dpct
+  license: MIT
+  summary: Dynamic Programming Cell Tracking Solver Library
+
