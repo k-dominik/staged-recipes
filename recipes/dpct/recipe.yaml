@@ -29,7 +29,7 @@ outputs:
       script:
         - if: not win
           then: ${RECIPE_DIR}/build.sh
-          else: "%RECIPE_DIR%\\bld.bat"
+          else: "%RECIPE_DIR%\\bulid.bat"
 
     requirements:
       build:
@@ -56,7 +56,7 @@ outputs:
       script:
         - if: not win
           then: ${RECIPE_DIR}/build-python.sh
-          else: "%RECIPE_DIR%\\bld-python.bat"
+          else: "%RECIPE_DIR%\\build-python.bat"
 
     requirements:
       build:
@@ -97,4 +97,4 @@ about:
   homepage: https://github.com/chaubold/dpct
   license: MIT
   summary: Dynamic Programming Cell Tracking Solver Library
-
+  license_file: LICENSE
