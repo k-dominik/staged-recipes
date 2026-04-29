@@ -97,7 +97,11 @@ outputs:
           pip_check: false
 
 about:
-  homepage: https://github.com/chaubold/dpct
+  homepage: https://github.com/ilastik/dpct
   license: MIT
   summary: Dynamic Programming Cell Tracking Solver Library
   license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - k-dominik
